@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     const agent = new https.Agent({ rejectUnauthorized: false });
 
-    const response = await axios.get(url, { httpsAgent: agent, timeout: 10000 });
+    const response = await axios.post(url, { httpsAgent: agent, timeout: 10000 });
 
     const data = response.data;
 
