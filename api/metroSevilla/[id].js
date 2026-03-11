@@ -41,7 +41,9 @@ export default async function handler(req, res) {
     return res.status(500).json({
       error: "Proxy error",
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
+      cause: error.cause
     });
   }
 }
+
