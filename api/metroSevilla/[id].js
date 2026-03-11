@@ -1,4 +1,4 @@
-import { Agent } from "undici";
+import axios from 'axios';
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -18,20 +18,15 @@ export default async function handler(req, res) {
   try {
     const url = `https://89.140.110.107:2733/GET/estimaciones/${id}`;
 
-    const dispatcher = new Agent({
-      connect: {
-        rejectUnauthorized: false
-      }
-    });
-
-    const response = await fetch(url, {
-      dispatcher,
-      headers: {
-        "User-Agent": "Mozilla/5.0"
-      }
+    const response = await axios.get(url, {
+      httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),
+      timeout: 10000
     });
 
     const data = await response.json();
+
+    const text = await response.text();
+    console.log("Respuesta remota:", text);
 
     return res.status(200).json(data);
 
@@ -46,4 +41,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
