@@ -1,10 +1,10 @@
+import { Agent } from "undici";
+
 export default async function handler(req, res) {
-  // CORS headers (set first)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Handle preflight
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
@@ -16,23 +16,30 @@ export default async function handler(req, res) {
   }
 
   try {
-    const tibUrl = `https://89.140.110.107:2733/GET/estimaciones/${id}`;
+    const url = `https://89.140.110.107:2733/GET/estimaciones/${id}`;
 
-    const response = await fetch(tibUrl, {
-      headers: {
-        "User-Agent": "Mozilla/5.0" // sometimes needed if API blocks bots
+    const dispatcher = new Agent({
+      connect: {
+        rejectUnauthorized: false
       }
     });
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "Upstream error" });
-    }
+    const response = await fetch(url, {
+      dispatcher,
+      headers: {
+        "User-Agent": "Mozilla/5.0"
+      }
+    });
 
     const data = await response.json();
 
     return res.status(200).json(data);
 
   } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch sevilla data" });
+    console.error(error);
+    return res.status(500).json({
+      error: "Proxy error",
+      message: error.message
+    });
   }
 }
