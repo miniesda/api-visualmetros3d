@@ -2,11 +2,6 @@ import axios from 'axios';
 import https from 'https';
 
 export default async function handler(req, res) {
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
   const { id } = req.query;
 
   if (!id) {
